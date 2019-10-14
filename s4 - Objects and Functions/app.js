@@ -250,5 +250,175 @@ fs2[0]();
 fs2[1]();
 fs2[2]();
 
+// -----------------------------------------------------------------
+// 48. Framework Aside: Function Factories
+function makeGreeting(language) {
+ 
+    return function (firstname, lastname) {
+        if (language === "en") {
+            console.log('Hello ' + firstname + ' ' + lastname);
+        }
+
+        if (language === "es") {
+            console.log('Hola ' + firstname + ' ' + lastname);
+        } 
+    }
+}
+
+var greetEnglish = makeGreeting('en');
+var greetSpanish = makeGreeting('es');
+
+greetEnglish("John","Doe");
+greetSpanish("John","Doe");
+
+// -------------------------------------------------------------------------------
+// 49. Closures and Callbacks
+function sayHiLater () {
+
+    var greeting = 'Hi!';
+
+    setTimeout(function() {
+
+        console.log(greeting);
+
+    }, 3000 )
+
+}
+
+sayHiLater();
+
+function tellMeWhenDone (callback) {
+
+    var a = 1000; // some work
+    var b = 2000; // some work
+
+    callback(); // the 'callback', it runs the function I give it!
+
+}
+
+tellMeWhenDone( function() {
+
+    console.log('I am done!');
+
+})
+
+tellMeWhenDone( function() {
+
+    console.log('All done!...');
+
+})
+
+// ------------------------------------------------------------------------------
+// 50. call(), apply(), and bind()
+
+var person3 = {
+    firstname: 'John',
+    lastname: 'Doe',
+    getFullName: function() {
+
+        var fullname = this.firstname + " " + this.lastname;
+        return fullname;
+
+    }
+}
+
+var logName = function(lang1, lang2) {
+
+    console.log('Logged: ' + this.getFullName());
+    console.log('Arguments: ' + lang1 + ' '+lang2);
+    console.log('-----------------------------');
+
+};
+
+logName.call(person3, 'es', 'en'); // error: undefined is not a function
+logName.apply(person3, ['es', 'en']); // error: undefined is not a function
+
+var logPersonName = logName.bind(person3); //  set what 'this' variable points to when it runs
+
+logPersonName('en');
+
+(function(lang1, lang2) {
+
+    console.log('Logged: ' + this.getFullName());
+    console.log('Arguments: ' + lang1 + ' '+lang2);
+    console.log('-----------------------------');
+
+}).apply(person3, ['en','jp'])
+
+// function borrowing
+var person4 = {
+    firstname: 'Jane',
+    lastname: 'Doe',
+}
+
+console.log(person3.getFullName.apply(person4));
+
+// function currying
+function multiply(a, b) {
+    return a * b;
+}
+
+var multiplyByTwo = multiply.bind(this, 2);
+console.log(multiplyByTwo(4));
+
+// ---------------------------------------------------------------------------
+// 51. Functional Programming
+
+function mapForEach (arr, fn) {
+
+    var newArr = [];
+    for (var i = 0; i<arr.length; i++ ) {
+        newArr.push(
+            fn(arr[i])
+        );
+    }
+    
+    return newArr;
+}
 
 
+console.log("51. Functional Programming -------------------------");
+var arr1 = [1,2,3];
+console.log(arr1);
+
+var arr2 = [];
+for (var i = 0; i<arr1.length; i++ ) {
+    arr2.push(arr1[i] * 2);
+}
+console.log(arr2);
+
+var arr3 = mapForEach(arr1, function (x) { return x * 3; });
+console.log(arr3);
+
+var arr4 = mapForEach(arr1, function (x) { return x > 2; });
+console.log(arr4);
+
+var checkPastLimit = function(limiter, item) {
+    return item > limiter;
+}
+
+var arr5 = mapForEach(arr1, checkPastLimit.bind(this, 1));
+console.log(arr5);
+
+var checkPastLimitSimplified = function (limiter) {
+    return (function(limiter, item) {
+        return item > limiter;
+    }).bind(this, limiter);
+};
+
+var arr6 = mapForEach(arr1, checkPastLimitSimplified(1));
+console.log("checkPastLimitSimplified running: ",arr6);
+
+
+// ---------------------------------------------------------------------
+// 52. Functional Programming - Part 2
+// underscore.js
+var arr7 = _.map(arr1, function(item) {
+    return item * 4;
+});
+console.log(arr7);
+
+var arr8 = _.filter([2,3,4,5,6,7], function(item) {
+    return item % 2 === 0;
+});
+console.log(arr8);
